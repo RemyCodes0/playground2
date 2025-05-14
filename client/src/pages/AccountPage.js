@@ -13,7 +13,7 @@ const AccountPage = () => {
   return (
     <div>
       <div style={styles.container}>
-          <img src={vector} alt='' style={{...styles.image}}/>
+        <img src={vector} alt='' style={{...styles.image}}/>
         <img src={vector1} alt='' style={{...styles.image, marginTop: '-1px', marginLeft: '-134.5px',}}/>
         <img src={vector2} alt='' style={{...styles.image, marginLeft:"-203px", marginTop:'-1px'}} />
         <img src={vector3} alt='' style={{...styles.image, marginTop: '-56px', marginLeft: '0.5px'}}/>
@@ -22,7 +22,6 @@ const AccountPage = () => {
         <img src={vector6} alt='' style={{...styles.image, marginTop: '-90px'}}/>
         <img src={vector7} alt='' style={{...styles.image, marginTop: '-57px', marginLeft: '-136px'}}/>
         <img src={vector8} alt='' style={{...styles.image, marginTop: '-90px', marginLeft: '-203px'}}/>
-        
       </div>
     </div>
   )
