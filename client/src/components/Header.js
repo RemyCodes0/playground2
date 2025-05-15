@@ -139,6 +139,8 @@ export default function PersistentDrawerRight() {
             { text: 'Gifts', path: '/gifts', icon: <CardGiftcardIcon /> },
             { text: 'About', path: '/about', icon: <InfoIcon /> },
             { text: 'Account', path: '/account', icon: <AccountCircleIcon /> },
+            { text: 'Login', path: '/login', icon: <AccountCircleIcon /> },
+            { text: 'Register', path: '/register', icon: <AccountCircleIcon /> },
           ].map(({ text, path, icon }) => (
             <ListItem key={text} disablePadding>
               <ListItemButton component={Link} to={path}>

@@ -6,6 +6,8 @@ import AboutPage from './pages/AboutPage'
 import GiftsPage from './pages/GiftsPage'
 import AccountPage from './pages/AccountPage'
 import Header from './components/Header'
+import Login from './pages/Login'
+import Register from './pages/Register'
 
 const App = () => {
   const [loading, setLoading] = useState(true)
@@ -24,6 +26,8 @@ const App = () => {
       <Route path='gifts/' element={<GiftsPage />}/>
       <Route path='account/' element={<AccountPage />} />
       <Route path='about/' element={<AboutPage/>} />
+      <Route path='/login' element={<Login/>}/>
+      <Route path='/register' element={<Register/>}/>
     </Routes>
    </Router>
     </div>

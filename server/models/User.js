@@ -18,11 +18,11 @@ const UserSchema = new mongoose.Schema({
     role:{
         type: String,
         enum: ['admin', 'player'],
-        default: 'Player'
+        default: 'player'
     },
     linkedGames: [{type: mongoose.Schema.Types.ObjectId, ref: 'Game'}],
     bookmarkedGames: [{type: mongoose.Schema.Types.ObjectId, ref: 'Game'}],
-    playedGames : [{type: mongoose.Schema.Types.ObjectId, ref:'Games'}]
+    playedGames : [{type: mongoose.Schema.Types.ObjectId, ref:'Game'}]
     
 }, {timestamps: true})
 

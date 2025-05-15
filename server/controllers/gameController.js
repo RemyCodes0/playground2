@@ -27,14 +27,14 @@ exports.deleteGame = async(req, res)=>{
     res.json({message: 'Deleted game'})
 }
 
-exports.likeGame = async(req,res) =>{
-    const user = await Game.findById(req.user.userId);
-    if(!user.likedGames.includes(req.params.gameId)){
-        user.likedGames.push(req.params.gameId);
-        await user.save()
-    }
-    res.json({message: 'game liked'})
-}
+// exports.likeGame = async(req,res) =>{
+//     const user = await Game.findById(req.user.userId);
+//     if(!user.likedGames.includes(req.params.gameId)){
+//         user.likedGames.push(req.params.gameId);
+//         await user.save()
+//     }
+//     res.json({message: 'game liked'})
+// }
 
 
 
