@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import Start from '../components/Start';
 
 const AppHuntGame = () => {
-  // App data - using placeholder icons since we can't access the original icon files
   const apps =[
     { id: 1, name: "WhatsApp", icon: "./icon/whatsapp.jpeg" },
     { id: 2, name: "Facebook", icon: "icon/facebook.jpeg" },
@@ -55,7 +55,7 @@ const AppHuntGame = () => {
     { id: 50, name: "Roblox", icon: "icon/roblox.png" }
   ]
 
-  // Game state
+
   const [currentRound, setCurrentRound] = useState(1);
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -68,6 +68,7 @@ const AppHuntGame = () => {
   const [incorrectSelections, setIncorrectSelections] = useState(new Set());
   const [gameOver, setGameOver] = useState(false);
   const [shuffledApps, setShuffledApps] = useState([]);
+  const [start, setStart] =useState(false)
 
   // Timer effect
   useEffect(() => {
@@ -193,7 +194,9 @@ const AppHuntGame = () => {
       }, 1000);
     }
   };
-
+ const handleStart =() =>{
+        setStart(true)
+    }
   // Initialize game on mount
   useEffect(() => {
     initGame();
@@ -202,7 +205,29 @@ const AppHuntGame = () => {
   const currentMistakes = currentRound === 1 ? mistakesRound1 : mistakesRound2;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-5 flex flex-col items-center">
+    <>
+    {!start?
+    (<div className='min-h-screen bg-gradient-to-br from-blue-100 to-gray-100 p-8'>
+        <div className='max-w-7xl rounded-lg flex flex-col alignCenter justify-center items-center  bg-white p-8' >
+          <h1 className='text-xl font-bold'>App Hunt</h1>
+          <p className='mb-8'>
+Sharpen your eyes in App Hunt, the ultimate game of speed, precision, and digital intuition! Dive into a world of icons where only the truly observant will rise to the top.
+<br/>
+In Round 1, you’ll be challenged to find 5 specific app logos hidden among a chaotic grid of 50. Each correct selection boosts your confidence—but beware! Every mistake is counted, and the clock is ticking. Can you identify WhatsApp from Telegram under pressure? Facebook from LinkedIn in a flash?
+
+But just when you think you’ve mastered the game…
+<br/>
+Round 2 begins. It’s the same concept—with a clever twist you’ll discover for yourself. Let’s just say: it’s designed to keep even the sharpest minds on edge.
+
+
+Whether you're a tech lover or just looking to train your brain, App Hunt will challenge your speed and accuracy like never before.
+
+Can you spot them all?
+          </p>
+            <button onClick={handleStart} className='text-white bg-red-700 p-5 rounded-lg w-full'>Start</button>
+        </div>
+    </div>):
+    ( <div className="min-h-screen bg-gray-100 p-5 flex flex-col items-center">
       <div className="max-w-4xl w-full">
         {/* Game Header */}
         <div className="flex justify-between items-center mb-5 p-4 bg-white rounded-lg shadow-md">
@@ -304,7 +329,12 @@ const AppHuntGame = () => {
           </div>
         )}
       </div>
-    </div>
+    </div>)
+
+    }
+    
+    </>
+   
   );
 };
 
