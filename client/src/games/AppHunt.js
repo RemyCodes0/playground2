@@ -213,7 +213,7 @@ const AppHuntGame = () => {
 
 In Round 1, you’ll be challenged to find 5 random app logos </p>
 <br/>
-<img src='find.png' alt='Image' className='rounded-lg w-full'/>
+<img src='find.png' alt='Image' className='rounded-lg w-full' />
 <p className='mt-4 mb-4 font-semibold'>
   hidden among a chaotic grid of 50.
 </p>
