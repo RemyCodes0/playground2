@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Start from '../components/Start';
-
 const AppHuntGame = () => {
   const apps =[
     { id: 1, name: "WhatsApp", icon: "./icon/whatsapp.jpeg" },

@@ -10,7 +10,6 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Logout from './pages/Logout';
 import AppHuntGame from './games/AppHunt';
-import SpotThePlaneGame from './games/SpotThePlane';
 
 const AppWrapper = () => {
   const location = useLocation();
