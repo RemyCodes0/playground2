@@ -1,6 +1,6 @@
 // GameRecommendations.jsx
 import React, { useEffect, useState } from 'react';
-
+import { Link } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -80,14 +80,21 @@ const GamePage = () => {
       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
         More games for you
       </Typography>
-
-      {gameList.map((game, index) => (
-        <GameCard
+<ul>
+  {gameList.map((game, index) => (
+     <li>
+      <Link to={game.url}>  
+      <GameCard
           key={index}
           title={game.title}
           description={game.description}
         />
-      ))}
+     
+      </Link>
+     </li>
+      ))}  
+</ul>
+      
     </Box>
   );
 };

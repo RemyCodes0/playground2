@@ -22,7 +22,9 @@ import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import InfoIcon from '@mui/icons-material/Info';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import LogoutIcon from '@mui/icons-material/Logout';
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -135,12 +137,13 @@ export default function PersistentDrawerRight() {
         <Divider />
         <List>
           {[
-            { text: 'Games', path: '/', icon: <SportsEsportsIcon /> },
-            { text: 'Gifts', path: '/gifts', icon: <CardGiftcardIcon /> },
-            { text: 'About', path: '/about', icon: <InfoIcon /> },
-            { text: 'Account', path: '/account', icon: <AccountCircleIcon /> },
-            { text: 'Login', path: '/login', icon: <AccountCircleIcon /> },
-            { text: 'Register', path: '/register', icon: <AccountCircleIcon /> },
+{ text: 'Games', path: '/', icon: <SportsEsportsIcon /> },
+  { text: 'Gifts', path: '/gifts', icon: <CardGiftcardIcon /> },
+  { text: 'About', path: '/about', icon: <InfoIcon /> },
+  { text: 'Account', path: '/account', icon: <AccountCircleIcon /> },
+  { text: 'Login', path: '/login', icon: <LoginIcon /> },
+  { text: 'Register', path: '/register', icon: <PersonAddIcon /> },
+  { text: 'Logout', path: '/logout', icon: <LogoutIcon /> },
           ].map(({ text, path, icon }) => (
             <ListItem key={text} disablePadding>
               <ListItemButton component={Link} to={path}>

@@ -8,6 +8,8 @@ import AccountPage from './pages/AccountPage'
 import Header from './components/Header'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Logout from './pages/Logout'
+import AppHuntGame from './games/AppHunt'
 
 const App = () => {
   const [loading, setLoading] = useState(true)
@@ -28,6 +30,8 @@ const App = () => {
       <Route path='about/' element={<AboutPage/>} />
       <Route path='/login' element={<Login/>}/>
       <Route path='/register' element={<Register/>}/>
+       <Route path='/logout' element={<Logout/>}/>
+       <Route path='/AppHunt' element={<AppHuntGame/>}/>
     </Routes>
    </Router>
     </div>
