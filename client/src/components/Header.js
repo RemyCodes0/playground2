@@ -144,7 +144,6 @@ export default function PersistentDrawerRight() {
   { text: 'Login', path: '/login', icon: <LoginIcon /> },
   { text: 'Register', path: '/register', icon: <PersonAddIcon /> },
   { text: 'Logout', path: '/logout', icon: <LogoutIcon /> },
-  { text: 'Spot The Plane', path: '/spottheplane', icon: <LogoutIcon /> },
           ].map(({ text, path, icon }) => (
             <ListItem key={text} disablePadding>
               <ListItemButton component={Link} to={path}>

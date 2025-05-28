@@ -208,23 +208,42 @@ const AppHuntGame = () => {
     <>
     {!start?
     (<div className='min-h-screen bg-gradient-to-br from-blue-100 to-gray-100 p-8'>
-        <div className='max-w-7xl rounded-lg flex flex-col alignCenter justify-center items-center  bg-white p-8' >
-          <h1 className='text-xl font-bold'>App Hunt</h1>
+        <div className='max-w-7xl mx-auto rounded-lg flex flex-col alignCenter justify-center items-center  bg-white p-8' >
+          <h1 className='text-xl font-bold text-red-900 underline mb-4'>App Hunt</h1>
           <p className='mb-8'>
-Sharpen your eyes in App Hunt, the ultimate game of speed, precision, and digital intuition! Dive into a world of icons where only the truly observant will rise to the top.
+<p className='mt-4 mb-4 font-semibold'>Sharpen your eyes in App Hunt, the ultimate game of speed, precision, and digital intuition! Dive into a world of icons where only the truly observant will rise to the top.
+
+In Round 1, you’ll be challenged to find 5 random app logos </p>
 <br/>
-In Round 1, you’ll be challenged to find 5 specific app logos hidden among a chaotic grid of 50. Each correct selection boosts your confidence—but beware! Every mistake is counted, and the clock is ticking. Can you identify WhatsApp from Telegram under pressure? Facebook from LinkedIn in a flash?
+<img src='find.png' alt='Image' className='rounded-lg w-full'/>
+<p className='mt-4 mb-4 font-semibold'>
+  hidden among a chaotic grid of 50.
+</p>
+
+<img src='apps.png' alt='Apps' className='rounded-lg w-full'/>
+ <p className='mt-4 mb-4 font-semibold'>Each correct selection boosts your confidence—but beware! Every mistake is counted, and the clock is ticking. </p>
+ <img src='mist.png' alt='mistakes' className='w-full rounded-lg'/>
+<p className='mt-4 font-semibold'>
+   Can you identify WhatsApp from Telegram under pressure? Facebook from LinkedIn in a flash?
 
 But just when you think you’ve mastered the game…
+  </p>
 <br/>
+
+<p className='mt-4 font-semibold'>
 Round 2 begins. It’s the same concept—with a clever twist you’ll discover for yourself. Let’s just say: it’s designed to keep even the sharpest minds on edge.
-
-
+<br/>
 Whether you're a tech lover or just looking to train your brain, App Hunt will challenge your speed and accuracy like never before.
-
+<br/>
+<br/>
 Can you spot them all?
+</p>
+
+
+
+
           </p>
-            <button onClick={handleStart} className='text-white bg-red-700 p-5 rounded-lg w-full'>Start</button>
+            <button onClick={handleStart} className='text-white bg-red-700 p-5 rounded-lg w-full mb-5 text-xl'>Start</button>
         </div>
     </div>):
     ( <div className="min-h-screen bg-gray-100 p-5 flex flex-col items-center">

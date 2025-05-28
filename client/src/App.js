@@ -32,7 +32,6 @@ const AppWrapper = () => {
         <Route path='/register' element={<Register />} />
         <Route path='/logout' element={<Logout />} />
         <Route path='/AppHunt' element={<AppHuntGame />} />
-        <Route path='/spottheplane' element={<SpotThePlaneGame />} />
       </Routes>
     </>
   );
