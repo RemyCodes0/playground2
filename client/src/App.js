@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Logout from './pages/Logout';
 import AppHuntGame from './games/AppHunt';
+import Ace_it from './games/Ace_it';
 
 const AppWrapper = () => {
   const location = useLocation();
@@ -31,6 +32,7 @@ const AppWrapper = () => {
         <Route path='/register' element={<Register />} />
         <Route path='/logout' element={<Logout />} />
         <Route path='/AppHunt' element={<AppHuntGame />} />
+        <Route path='/Ace_it' element={<Ace_it />} />
       </Routes>
     </>
   );
