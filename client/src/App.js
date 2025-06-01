@@ -10,7 +10,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Logout from './pages/Logout';
 import AppHuntGame from './games/AppHunt';
-import Ace_it from './games/Ace_it';
+import Ace_it from './games/Ace_it/Ace_it';
+import {AceItAnalytics} from './games/Ace_it/AceItAnalytics.js'
 
 const AppWrapper = () => {
   const location = useLocation();
@@ -33,6 +34,7 @@ const AppWrapper = () => {
         <Route path='/logout' element={<Logout />} />
         <Route path='/AppHunt' element={<AppHuntGame />} />
         <Route path='/Ace_it' element={<Ace_it />} />
+        <Route path='/analysis' element={<AceItAnalytics />} />
       </Routes>
     </>
   );
