@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@auth0/auth0-react": "^2.3.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.1.0",
+    "react-router-dom": "^7.6.1",
+    "web-vitals": "^5.0.2"
+  }
+}
