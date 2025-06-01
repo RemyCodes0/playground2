@@ -11,7 +11,7 @@ import Register from './pages/Register';
 import Logout from './pages/Logout';
 import AppHuntGame from './games/AppHunt';
 import Ace_it from './games/Ace_it/Ace_it';
-import {AceItAnalytics} from './games/Ace_it/AceItAnalytics.js'
+import AceItAnalytics from './games/Ace_it/AceItAnalytics'
 
 const AppWrapper = () => {
   const location = useLocation();

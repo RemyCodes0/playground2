@@ -3,6 +3,7 @@ import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-react'
 
 const API_BASE_URL = 'http://localhost:5000/api';
+const AUTH0_AUDIENCE = "https://dev-euu0ztapz6trsjxc.us.auth0.com/api/v2/";
 
 const Ace_it = () => {
     const { user, getAccessTokenSilently, isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
@@ -15,6 +16,41 @@ const Ace_it = () => {
     const [previousScores, setPreviousScores] = useState([]);
     const [start, setStart] = useState(false);
 
+
+    const fetchPreviousScores = async () => {
+        if (isAuthenticated && user) {
+            try {
+
+                const token = localStorage.getItem("token")
+                console.log("Hello world, ", token)
+                console.log('Fetching scores for user:', user.sub);
+                const response = await axios.get(`${API_BASE_URL}/scores/user/${user.sub}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                console.log('Scores fetched successfully:', response.data);
+                setPreviousScores(response.data);
+            } catch (error) {
+                console.error('Error fetching previous scores:', error);
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.error('Error response:', error.response.data);
+                    console.error('Error status:', error.response.status);
+                    setError(error.response.data.error || 'Failed to fetch previous scores. Please try again.');
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    console.error('No response received:', error.request);
+                    setError('No response from server. Please check your connection.');
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.error('Error setting up request:', error.message);
+                    setError('Failed to fetch previous scores. Please try again.');
+                }
+            }
+        }
+    };
     // Debug authentication state
     useEffect(() => {
         console.log('Auth State:', {
@@ -22,38 +58,9 @@ const Ace_it = () => {
             isLoading,
             user
         });
-    }, [isAuthenticated, isLoading, user]);
-
-    // Fetch user's previous scores when component mounts
-    useEffect(() => {
-        const fetchPreviousScores = async () => {
-            if (isAuthenticated && user) {
-                try {
-                    const token = await getAccessTokenSilently({
-                        authorizationParams: {
-                            audience: 'http://localhost:5000',
-                            scope: 'read:scores write:scores'
-                        }
-                    });
-                    
-                    console.log('Fetching scores for user:', user.sub);
-                    const response = await axios.get(`${API_BASE_URL}/scores/user/${user.sub}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    });
-                    console.log('Scores fetched successfully:', response.data);
-                    setPreviousScores(response.data);
-                } catch (error) {
-                    
-                    console.error('Error fetching previous scores:', error.response || error);
-                    setError(error.response?.data?.error || 'Failed to fetch previous scores. Please try again.');
-                }
-            }
-        };
-
         fetchPreviousScores();
-    }, [isAuthenticated, user, getAccessTokenSilently]);
+    }, [isAuthenticated, isLoading, user, getAccessTokenSilently]);
+
 
     const handleStartTest = () => {
         setGameState('test');
@@ -65,12 +72,7 @@ const Ace_it = () => {
         setLoading(true);
         setError(null);
         try {
-            const token = await getAccessTokenSilently({
-                authorizationParams: {
-                    audience: 'http://localhost:5000',
-                    scope: 'read:scores write:scores'
-                }
-            });
+            const token = localStorage.getItem("token")
             console.log('Submitting test score:', testScore);
             const response = await axios.post(`${API_BASE_URL}/scores`, {
                 userId: user.sub,
@@ -85,8 +87,18 @@ const Ace_it = () => {
             console.log('Test score saved successfully:', response.data);
             setGameState('feedback');
         } catch (error) {
-            console.error('Error saving test score:', error.response || error);
-            setError(error.response?.data?.error || 'Failed to save test score. Please try again.');
+            console.error('Error saving test score:', error);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+                console.error('Error status:', error.response.status);
+                setError(error.response.data.error || 'Failed to save test score. Please try again.');
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+                setError('No response from server. Please check your connection.');
+            } else {
+                console.error('Error setting up request:', error.message);
+                setError('Failed to save test score. Please try again.');
+            }
         }
         setLoading(false);
     };
@@ -102,12 +114,7 @@ const Ace_it = () => {
         setLoading(true);
         setError(null);
         try {
-            const token = await getAccessTokenSilently({
-                authorizationParams: {
-                    audience: 'http://localhost:5000',
-                    scope: 'read:scores write:scores'
-                }
-            });
+            const token = localStorage.getItem("token")
             console.log('Submitting final score:', score);
             const response = await axios.post(`${API_BASE_URL}/scores`, {
                 userId: user.sub,
@@ -137,8 +144,18 @@ const Ace_it = () => {
             setTestScore(0);
             setFeedbackRate(10);
         } catch (error) {
-            console.error('Error saving final score:', error.response || error);
-            setError(error.response?.data?.error || 'Failed to save score. Please try again.');
+            console.error('Error saving final score:', error);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+                console.error('Error status:', error.response.status);
+                setError(error.response.data.error || 'Failed to save score. Please try again.');
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+                setError('No response from server. Please check your connection.');
+            } else {
+                console.error('Error setting up request:', error.message);
+                setError('Failed to save score. Please try again.');
+            }
         }
         setLoading(false);
     };
