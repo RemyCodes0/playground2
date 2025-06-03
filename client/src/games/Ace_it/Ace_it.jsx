@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react"
 import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-react'
-
-const API_BASE_URL = 'http://localhost:5000/api';
+import { API_URL } from "../../../constants";
 
 const Ace_it = () => {
     const { user, getAccessTokenSilently, isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
@@ -23,7 +22,7 @@ const Ace_it = () => {
                 const token = localStorage.getItem("token")
                 console.log("Hello world, ", token)
                 console.log('Fetching scores for user:', user.sub);
-                const response = await axios.get(`${API_BASE_URL}/scores/user/${user.sub}`, {
+                const response = await axios.get(`${API_URL}/scores/user/${user.sub}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -73,7 +72,7 @@ const Ace_it = () => {
         try {
             const token = localStorage.getItem("token")
             console.log('Submitting test score:', testScore);
-            const response = await axios.post(`${API_BASE_URL}/scores`, {
+            const response = await axios.post(`${API_URL}/scores`, {
                 userId: user.sub,
                 gameType: 'ace_it',
                 score: testScore,
@@ -115,7 +114,7 @@ const Ace_it = () => {
         try {
             const token = localStorage.getItem("token")
             console.log('Submitting final score:', score);
-            const response = await axios.post(`${API_BASE_URL}/scores`, {
+            const response = await axios.post(`${API_URL}/scores`, {
                 userId: user.sub,
                 gameType: 'ace_it',
                 score: score,
@@ -130,7 +129,7 @@ const Ace_it = () => {
 
             // Fetch updated scores after submission
             console.log('Fetching updated scores');
-            const scoresResponse = await axios.get(`${API_BASE_URL}/scores/user/${user.sub}`, {
+            const scoresResponse = await axios.get(`${API_URL}/scores/user/${user.sub}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
