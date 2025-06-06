@@ -15,7 +15,6 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareIcon from '@mui/icons-material/Share';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import { API_URL } from '../../constants';
 
 const GameCard = ({ title, description }) => (
   <Card sx={{ display: 'flex', alignItems: 'center', mb: 2, p: 2 }}>
@@ -48,7 +47,7 @@ const GamePage = () => {
     const fetchGames = async()=>{
 
       try{
-        const res = await axios.get(API_URL + '/games')
+        const res = await axios.get('http://localhost:5000/api/games')
         setGameList(res.data);
       }catch(err){
         console.error("Failed to fetch games", err)

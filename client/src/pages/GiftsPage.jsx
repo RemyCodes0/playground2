@@ -48,8 +48,8 @@ const badges = [
 
 const GiftsPage = () => {
   return (
-    <div style={styles.body}>
-       <div style={styles.container}>
+    <div >
+       <div >
  <Box sx={{ bgcolor: '#eee', minHeight: '100vh', p: 2 }}>
       {/* Header */}
       <Typography variant="h6" fontWeight="bold">
