@@ -12,6 +12,7 @@ import Logout from './pages/Logout';
 import AppHuntGame from './games/AppHunt';
 import Ace_it from './games/Ace_it/Ace_it';
 import AceItAnalytics from './games/Ace_it/AceItAnalytics'
+import Signup from './pages/Signup';
 
 const AppWrapper = () => {
   const location = useLocation();
@@ -30,7 +31,7 @@ const AppWrapper = () => {
         <Route path='/account' element={<AccountPage />} />
         <Route path='/about' element={<AboutPage />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
+        <Route path='/signup' element={<Signup />} />
         <Route path='/logout' element={<Logout />} />
         <Route path='/AppHunt' element={<AppHuntGame />} />
         <Route path='/Ace_it' element={<Ace_it />} />

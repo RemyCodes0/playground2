@@ -142,7 +142,7 @@ export default function PersistentDrawerRight() {
   { text: 'About', path: '/about', icon: <InfoIcon /> },
   { text: 'Account', path: '/account', icon: <AccountCircleIcon /> },
   { text: 'Login', path: '/login', icon: <LoginIcon /> },
-  { text: 'Register', path: '/register', icon: <PersonAddIcon /> },
+  { text: 'Signup', path: '/signup', icon: <PersonAddIcon /> },
   { text: 'Logout', path: '/logout', icon: <LogoutIcon /> },
           ].map(({ text, path, icon }) => (
             <ListItem key={text} disablePadding>

@@ -15,7 +15,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShareIcon from "@mui/icons-material/Share";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import { API_URL } from "../../constants";
+import { API_URL } from "../../constants.ts";
 
 const GameCard = ({ title, description }) => (
   <Card sx={{ display: "flex", alignItems: "center", mb: 2, p: 2 }}>
