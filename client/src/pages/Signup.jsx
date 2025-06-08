@@ -3,6 +3,7 @@ import {createUserWithEmailAndPassword, updateProfile} from "firebase/auth";
 import {auth} from "../firebase" 
 import logo from "../assets/logo.svg"
 import { useNavigate } from 'react-router-dom';
+import { GoogleAuthProvider, signInWithPopup  } from 'firebase/auth';
 
 const Signup = () => {
     const [email, setEmail] =useState("")
@@ -45,6 +46,24 @@ const Signup = () => {
             setLoader(false)
         }
     };
+    const handleGoogleSignup =async ()=>{
+        setError("")
+        setSuccess("")
+        setLoader("")
+
+        const provider = new GoogleAuthProvider()
+        try{
+            const result = await signInWithPopup(auth, provider)
+            const user = result.user
+
+            setSuccess(`Welcome ${user.displayName}! Account created with Google`)
+            navigate("/")
+        }catch(err){
+            setError(err.message)
+        }finally{
+            setLoader(false)
+        }
+    }
 
 
   return (
@@ -77,6 +96,9 @@ const Signup = () => {
             (<button className='w-full bg-red-600 mb-4 rounded-sm p-2 text-white'  type='submit'>Signup</button>)
             :(<button className='w-full bg-red-600 mb-4 rounded-sm p-2 text-white'  type='submit'>Loading...</button>)
         }
+        <button onClick={handleGoogleSignup} className='w-full bg-blue-500 mb-4 rounded-sm p-2 text-white' type='button'>
+            Signup with Google
+        </button>
         </form>
         {error && <p>{error}</p>}
         {success && <p>{success}</p>} 
