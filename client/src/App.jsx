@@ -9,16 +9,18 @@ import Header from './components/Header';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Logout from './pages/Logout';
-import AppHuntGame from './games/AppHunt';
-import Ace_it from './games/Ace_it/Ace_it';
-import AceItAnalytics from './games/Ace_it/AceItAnalytics'
+import AppHuntGame from './games/AppHunt/AppHunt';
+import Ace_it from './games/AceIt/Ace_it';
+import AceItAnalytics from './games/AceIt/AceItAnalytics'
 import Signup from './pages/Signup';
+import { Game } from './games/BetOn/Game';
+import HomePage from './games/BetOn/HomePage'
 
 const AppWrapper = () => {
   const location = useLocation();
 
 
-  const hideHeaderRoutes = ['/AppHunt', '/spottheplane', "/Ace_it"];
+  const hideHeaderRoutes = ['/AppHunt', '/spottheplane', "/BetOn", "/StartBetOn"];
 
   const shouldHideHeader = hideHeaderRoutes.includes(location.pathname);
 
@@ -36,6 +38,9 @@ const AppWrapper = () => {
         <Route path='/AppHunt' element={<AppHuntGame />} />
         <Route path='/Ace_it' element={<Ace_it />} />
         <Route path='/analysis' element={<AceItAnalytics />} />
+        <Route path='/BetOn' element={<HomePage/>}/>
+        <Route path='/StartBetOn' element={<Game/>}/>
+        
       </Routes>
     </>
   );
