@@ -15,6 +15,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShareIcon from "@mui/icons-material/Share";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { API_URL } from "../../constants.ts";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const GameCard = ({ title, description }) => (
   <Card sx={{ display: "flex", alignItems: "center", mb: 2, p: 2 }}>
@@ -49,20 +50,23 @@ const GameCard = ({ title, description }) => (
 
 const GamePage = () => {
   const [gameList, setGameList] = useState([]);
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
     const fetchGames = async () => {
       try {
         const res = await axios.get(`${API_URL}/games`);
+        setLoading(false)
         setGameList(res.data);
       } catch (err) {
         console.error("Failed to fetch games", err);
+        setLoading(false)
       }
     };
     fetchGames();
   }, []);
 
   return (
-    <Box sx={{ p: 3, bgcolor: "#eee", minHeight: "100vh" }}>
+    <Box sx={{ p: 3, bgcolor: "#eee", minHeight: "100vh", mt: -6 }}>
       <Typography variant="h6" fontWeight="bold" gutterBottom>
         Newest Game
       </Typography>
@@ -84,7 +88,15 @@ const GamePage = () => {
       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
         More games for you
       </Typography>
-      <ul>
+      <div>
+        {loading?
+        (
+        <div className="flex justify-center">
+              <CircularProgress size={100}/>
+        </div>
+    
+      ):
+      (<ul>
         {gameList.map((game, index) => (
           <li>
             <Link to={game.url}>
@@ -96,7 +108,10 @@ const GamePage = () => {
             </Link>
           </li>
         ))}
-      </ul>
+      </ul>)}
+      
+      </div>
+      
     </Box>
   );
 };

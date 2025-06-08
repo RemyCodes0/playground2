@@ -1,57 +1,9 @@
-// import axios from 'axios'
-// import React from 'react'
-// import { useState } from 'react'
-// import { API_URL } from "../../constants";
-
-// const Login = () => {
-//     const [form, setForm] = useState({email: '', password:''})
-//     const handleChange = e=> setForm({...form, [e.target.name]: e.target.value})
-//     const handleSubmit = async e=>{
-//         e.preventDefault()
-//         try{
-//         const res = await axios.post(`${API_URL}/api/auth/login`, form);
-//         localStorage.setItem('token', res.data.token)
-//         alert('successfully logged In')
-//         }catch(err){
-//             alert(err.response?.data?.message || 'Login failed')
-//         }
-
-//     }
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//         <input name='email' placeholder='Email' onChange={handleChange}/>
-//         <input name='password' type='password' placeholder='Password' onChange={handleChange}/>
-//         <button type='submit'>Login</button>
-//     </form>
-//   )
-// }
-
-// export default Login
-
-// import React from "react";
-// import { useAuth0 } from "@auth0/auth0-react";
-
-// const Login = () => {
-//   const { loginWithRedirect } = useAuth0();
-//   return (
-//     <button
-//       onClick={() => {
-//         loginWithRedirect();
-//       }}
-//     >
-//       Login
-//     </button>
-//   );
-// };
-
-// export default Login;
-
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import React, { useState } from 'react'
 import {auth} from "../firebase"
 import logo from '../assets/logo.svg'
 import { useNavigate } from 'react-router-dom'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
 const Login = () => {
   const [email, setEmail] = useState("")
@@ -82,6 +34,24 @@ const Login = () => {
       setLoader(false)
     }
   }
+  const handleGoogleSignup= async ()=>{
+    setError("")
+    setSuccess("")
+    setLoader(true)
+    const provider = new GoogleAuthProvider()
+    try{
+      const result = await signInWithPopup(auth, provider)
+      const user = result.user
+
+      setSuccess(`Welcome ${user}`)
+      navigate("/")
+
+    }catch(err){
+      setError(err.message)
+    }finally{
+      setLoader(false)
+    }
+  }
   return (
     <div className='min-h-screen p-10 bg-gradient-to-br from-gray-50 to-blue-50 flex justify-center items-center' style={{marginTop: -70}}>
       <div className='max-w-7xl p-6 mx-auto bg-white rounded-xl flex flex-col items-center justify-center '>
@@ -93,8 +63,11 @@ const Login = () => {
         <input type="text" name='email' value={email} className='border mb-4 w-full' onChange={(e)=> setEmail(e.target.value)} required />
         <label >Password</label>
         <input type="password" name="password" className='border mb-10 w-full' value={password} onChange={(e)=> setPassword(e.target.value)} required/>
-      {!loader?(  <button className='w-full bg-red-600 mb-4 text-white rounded-sm'  type='submit'>Login</button>)
-      :(  <button className='w-full bg-red-600 mb-4 text-white rounded-sm'  type='submit'>Loading...</button>)}
+      {!loader?(  <button className='w-full bg-red-600 mb-4 text-white rounded-sm p-2'  type='submit'>Login</button>)
+      :(  <button className='w-full bg-red-600 mb-4 text-white rounded-sm p-2'  type='submit'>Loading...</button>)}
+      <button onClick={handleGoogleSignup} className='w-full bg-blue-500 mb-4 rounded-sm p-2 text-white' type='button'>
+            Login with Google
+        </button>
       </form>
       {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
       {success && <p style={{ color: "green", marginTop: "10px" }}>{success}</p>}

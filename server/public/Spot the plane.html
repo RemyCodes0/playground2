@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spot the Plane</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            /*overflow: hidden;*/
+        }
+        
+        #game-container {
+            position: relative;
+            width: 1100px;
+            height: 600px;
+            margin: 20px auto;
+            border: 3px solid #333;
+            background-color: #e6f7ff;
+            overflow: hidden;
+        }
+        
+        .plane {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M22,16v-2l-8.5-5V3.5C13.5,2.67,12.83,2,12,2s-1.5,0.67-1.5,1.5V9L2,14v2l8.5-2.5V19L8,20.5V22l4-1l4,1v-1.5L13.5,19 v-5.5L22,16z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            transition: transform 0.2s;
+            transform-origin: center;
+        }
+        
+        .plane:hover {
+            transform: scale(1.1);
+        }
+        
+        .tracked-plane {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23f00"><path d="M22,16v-2l-8.5-5V3.5C13.5,2.67,12.83,2,12,2s-1.5,0.67-1.5,1.5V9L2,14v2l8.5-2.5V19L8,20.5V22l4-1l4,1v-1.5L13.5,19 v-5.5L22,16z"/></svg>');
+        }
+        
+        #controls {
+            margin: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        #status {
+            font-size: 24px;
+            margin: 20px;
+            font-weight: bold;
+            color: #333;
+            display: inline;
+        }
+
+       
+        
+        #level-display {
+            font-size: 20px;
+            margin: 10px;
+            color: #333;
+            display: inline;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            font-size: 24px;
+            z-index: 100;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .victory-animation {
+            animation: victory 1s ease-in-out;
+        }
+        hr {
+            rotate: 90deg;
+            height: 3px;
+            width: 20px;
+            display: inline;
+            border-width: 2px;
+            border-style: solid ;
+            color: red;
+
+        }
+        @keyframes victory {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+        
+        /* Cloud decorations */
+        .cloud {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .logo{
+            position: absolute;
+            opacity: 1;
+            margin-left: -100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="amea2.svg" alt="Logo">
+    </div> 
+    <div id="level-display">Level: 1</div>
+    <hr>
+    <div id="status">Click Start to begin!</div>
+    
+    <div id="game-container">
+        <div id="start-overlay" class="overlay">
+            <h2>Spot the Plane</h2>
+            <p>Keep track of the highlighted planes as they move!</p>
+            <button id="start-game">Start Game</button>
+        </div>
+        <div id="level-complete-overlay" class="overlay hidden">
+            <h2>Level Complete!</h2>
+            <p id="level-message">Great job! Ready for the next level?</p>
+            <button id="next-level">Next Level</button>
+        </div>
+        <div id="game-complete-overlay" class="overlay hidden">
+            <h2 style="color: green;">Congratulations!</h2>
+            <p>You completed all levels!</p>
+            <button id="restart-game">Play Again</button>
+        </div>
+        <div id="game-over-overlay" class="overlay hidden">
+            <h2 style="color: red;">Game Over!</h2>
+            <p id="game-over-message">You didn't find all the planes.</p>
+            <button id="try-again">Try Again</button>
+        </div>
+    </div>
+    
+    <div id="controls">
+        <button id="start-button">Start</button>
+        <button id="restart-button">Restart</button>
+    </div>
+    <script>
+        // Game variables
+        const totalPlanes = 12;
+        const totalLevels = 6;
+        let currentLevel = 1;
+        let planesFound = 0;
+        let trackedPlanes = [];
+        let allPlanes = [];
+        let gameState = 'idle'; 
+        let gameContainer = document.getElementById('game-container');
+        let containerWidth = gameContainer.offsetWidth;
+        let containerHeight = gameContainer.offsetHeight;
+        let animationFrameId = null;
+        let moveStartTime = 0;
+        let moveDuration = 7000; // 5 seconds of movement
+        
+        // Buttons and overlays
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+        const statusDisplay = document.getElementById('status');
+        const levelDisplay = document.getElementById('level-display');
+        const startOverlay = document.getElementById('start-overlay');
+        const startGameButton = document.getElementById('start-game');
+        const levelCompleteOverlay = document.getElementById('level-complete-overlay');
+        const nextLevelButton = document.getElementById('next-level');
+        const gameCompleteOverlay = document.getElementById('game-complete-overlay');
+        const restartGameButton = document.getElementById('restart-game');
+        const gameOverOverlay = document.getElementById('game-over-overlay');
+        const tryAgainButton = document.getElementById('try-again');
+        
+        // Advanced motion variables
+        const planeMotions = [];
+        
+        // Initialize the game
+        function initGame() {
+            // Clear any existing planes
+            gameContainer.querySelectorAll('.plane').forEach(plane => plane.remove());
+            gameContainer.querySelectorAll('.cloud').forEach(cloud => cloud.remove());
+            
+            // Cancel any running animation
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            
+            allPlanes = [];
+            trackedPlanes = [];
+            planesFound = 0;
+            planeMotions.length = 0;
+            
+            // Add some clouds for decoration
+            addClouds();
+            
+            // Create planes
+            for (let i = 0; i < totalPlanes; i++) {
+                const plane = document.createElement('div');
+                plane.className = 'plane';
+                plane.id = `plane-${i}`;
+                
+                // Random position - ensure they're fully within container
+                const xPos = 40 + Math.random() * (containerWidth - 80);
+                const yPos = 40 + Math.random() * (containerHeight - 80);
+                
+                plane.style.left = `${xPos}px`;
+                plane.style.top = `${yPos}px`;
+                
+                // Random initial rotation
+                const rotation = Math.random() * 360;
+                plane.style.transform = `rotate(${rotation}deg)`;
+                
+                // Add click event
+                plane.addEventListener('click', handlePlaneClick);
+                
+                gameContainer.appendChild(plane);
+                allPlanes.push(plane);
+                
+                // Initialize plane motion parameters with more consistent settings
+                planeMotions.push({
+                    // Position tracking
+                    startX: xPos,
+                    startY: yPos,
+                    x: xPos,
+                    y: yPos,
+                    lastX: xPos, // Track previous position for smoother rotation
+                    lastY: yPos,
+                    rotation: rotation,
+                    
+                    // Movement parameters - MORE CONSISTENT SPEEDS
+                    baseSpeed: 1.5 + Math.random() * 5.0, // Narrower speed range (1.5-2.0)
+                    currentSpeed: 1.5 + Math.random() * 0.5, // Start with consistent speed
+                    maxSpeed: 10.0, // Hard cap on maximum speed
+                    minSpeed: 9.5, // Higher minimum speed
+                    direction: Math.random() * Math.PI * 2,
+                    targetDirection: Math.random() * Math.PI * 2,
+                    turnRate: 0.02 + Math.random() * 0.01, // Gentler turning
+                    
+                    // Pattern type - ONLY USE RELIABLE PATTERNS
+                    pattern: Math.floor(Math.random() * 3), // Only use patterns 0, 1, and 2
+                    
+                    // Pattern-specific parameters
+                    patternTime: 0,
+                    patternPhase: Math.random() * Math.PI * 2, // Random starting phase
+                    patternDuration: 200 + Math.random() * 100, // Longer pattern durations
+                    circleRadius: 30 + Math.random() * 40, // Smaller circles
+                    amplitude: 20 + Math.random() * 20, // Smaller wave amplitude
+                    frequency: 0.01 + Math.random() * 0.02, // Lower frequency for smoother waves
+                    
+                    // Target position for directed movement
+                    targetX: Math.random() * containerWidth,
+                    targetY: Math.random() * containerHeight,
+                    targetTimer: 0,
+                    targetDuration: 150 + Math.random() * 100,
+                    
+                    // Plane dimensions
+                    width: 40,
+                    height: 40,
+                    
+                    // Smoothing
+                    previousPositions: [], // For trailing average position
+                    positionHistorySize: 5 // INCREASE HISTORY SIZE for smoother motion
+                });
+            }
+            
+            // Update display
+            levelDisplay.textContent = `Level: ${currentLevel}`;
+            statusDisplay.textContent = `Click Start to begin!`;
+            
+            // Enable start button
+            startButton.disabled = false;
+            gameState = 'idle';
+        }
+        
+        // Add decorative clouds
+        function addClouds() {
+            const cloudCount = 5 + Math.floor(Math.random() * 5);
+            
+            for (let i = 0; i < cloudCount; i++) {
+                const size = 30 + Math.random() * 70;
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                cloud.style.width = `${size}px`;
+                cloud.style.height = `${size * 0.6}px`;
+                cloud.style.left = `${Math.random() * containerWidth}px`;
+                cloud.style.top = `${Math.random() * containerHeight * 0.7}px`;
+                gameContainer.appendChild(cloud);
+                
+                // Add some "puffs" to the cloud
+                for (let j = 0; j < 3; j++) {
+                    const puff = document.createElement('div');
+                    puff.className = 'cloud';
+                    const puffSize = size * (0.6 + Math.random() * 0.4);
+                    puff.style.width = `${puffSize}px`;
+                    puff.style.height = `${puffSize}px`;
+                    puff.style.left = `${j * size * 0.4}px`;
+                    puff.style.top = `${Math.random() * size * 0.2}px`;
+                    cloud.appendChild(puff);
+                }
+            }
+        }
+        
+        // Start level
+        function startLevel() {
+            gameState = 'memorize';
+            statusDisplay.textContent = `Memorize ${currentLevel} plane${currentLevel > 1 ? 's' : ''}!`;
+            startButton.disabled = true;
+            
+            // Select random planes to track
+            trackedPlanes = [];
+            const availablePlanes = [...allPlanes];
+            
+            for (let i = 0; i < currentLevel; i++) {
+                if (availablePlanes.length === 0) break;
+                
+                const randomIndex = Math.floor(Math.random() * availablePlanes.length);
+                const selectedPlane = availablePlanes.splice(randomIndex, 1)[0];
+                trackedPlanes.push(selectedPlane);
+                selectedPlane.classList.add('tracked-plane');
+            }
+            
+            // Allow time to memorize
+            setTimeout(startMoving, 3000);
+        }
+        
+        // Get a random point within the container but away from edges
+        function getRandomContainerPoint() {
+            return {
+                x: 60 + Math.random() * (containerWidth - 120),
+                y: 60 + Math.random() * (containerHeight - 120)
+            };
+        }
+        
+        // Start moving the planes
+        function startMoving() {
+            gameState = 'moving';
+            statusDisplay.textContent = 'Keep track of the planes!';
+            
+            // Remove highlighting
+            trackedPlanes.forEach(plane => {
+                plane.classList.remove('tracked-plane');
+            });
+            
+            // Reset positions and initialize motion patterns
+            planeMotions.forEach((motion, index) => {
+                // Get current position instead of resetting to start position
+                const rect = allPlanes[index].getBoundingClientRect();
+                const containerRect = gameContainer.getBoundingClientRect();
+                
+                // Calculate position relative to the container
+                motion.x = rect.left - containerRect.left;
+                motion.y = rect.top - containerRect.top;
+                motion.lastX = motion.x;
+                motion.lastY = motion.y;
+                motion.previousPositions = [];
+                
+                // Add initial position to history
+                for (let i = 0; i < motion.positionHistorySize; i++) {
+                    motion.previousPositions.push({x: motion.x, y: motion.y});
+                }
+                
+                // Initialize target
+                const target = getRandomContainerPoint();
+                motion.targetX = target.x;
+                motion.targetY = target.y;
+                motion.targetTimer = 0;
+                
+                // Reset pattern time
+                motion.patternTime = 0;
+            });
+            
+            // Use requestAnimationFrame for smoother animation
+            moveStartTime = performance.now();
+            animateMovement();
+        }
+        
+        // Animate using requestAnimationFrame for smoother motion
+        function animateMovement() {
+            const currentTime = performance.now();
+            const elapsedTime = currentTime - moveStartTime;
+            
+            // Update all plane positions
+            allPlanes.forEach((plane, index) => {
+                updatePlanePosition(plane, index, elapsedTime);
+            });
+            
+            // Continue animation if still in moving state
+            if (elapsedTime < moveDuration && gameState === 'moving') {
+                animationFrameId = requestAnimationFrame(animateMovement);
+            } else if (gameState === 'moving') {
+                // End movement phase
+                startGuessing();
+            }
+        }
+        
+        // Mathematical helper for smooth transitions
+        function easeInOut(t) {
+            return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        }
+        
+        // Smoothly interpolate angles
+        function lerpAngle(a, b, t) {
+            const diff = ((b - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+            return a + diff * t;
+        }
+        
+        // Update plane position with smoother motion
+        function updatePlanePosition(plane, index, elapsedTime) {
+            const motion = planeMotions[index];
+            
+            // Store last position for direction calculation
+            motion.lastX = motion.x;
+            motion.lastY = motion.y;
+            
+            // Pattern progress (normalized 0-1 for the motion duration)
+            const progress = Math.min(elapsedTime / moveDuration, 1);
+            motion.patternTime += 0.016; // Approximately 60fps timing
+            
+            let newX = motion.x;
+            let newY = motion.y;
+            
+            // Pattern-specific movement
+            switch(motion.pattern) {
+                case 0: // Smooth directed flight with gentle turns
+                    // Update direction gradually towards target direction
+                    if (Math.random() < 0.01) { // Less frequent direction changes
+                        motion.targetDirection = Math.random() * Math.PI * 2;
+                    }
+                    
+                    // Smooth turning towards target direction
+                    motion.direction = lerpAngle(
+                        motion.direction, 
+                        motion.targetDirection, 
+                        motion.turnRate * 0.7 // Slower turning
+                    );
+                    
+                    // Smooth speed changes - REDUCED VARIATION
+                    motion.currentSpeed = motion.currentSpeed * 0.97 + 
+                                        (motion.minSpeed + Math.sin(motion.patternTime * 0.3) * 
+                                        (motion.maxSpeed - motion.minSpeed) * 0.3) * 0.03;
+                    
+                    // Move plane
+                    newX += Math.cos(motion.direction) * motion.currentSpeed;
+                    newY += Math.sin(motion.direction) * motion.currentSpeed;
+                    break;
+                    
+                case 1: // Gentle curved path
+                    // Smooth circular motion around target point
+                    motion.targetTimer++;
+                    
+                    if (motion.targetTimer >= motion.targetDuration) {
+                        // LIMIT TARGET DISTANCE to prevent fast jumps
+                        const currentX = motion.x;
+                        const currentY = motion.y;
+                        let target;
+                        
+                        // Pick a target that's not too far away
+                        do {
+                            target = getRandomContainerPoint();
+                            const dx = target.x - currentX;
+                            const dy = target.y - currentY;
+                            const distance = Math.sqrt(dx*dx + dy*dy);
+                            
+                            // If close enough, accept the target
+                            if (distance < containerWidth * 0.4) break;
+                        } while (true);
+                        
+                        motion.targetX = target.x;
+                        motion.targetY = target.y;
+                        motion.targetTimer = 0;
+                        motion.targetDuration = 150 + Math.random() * 100;
+                    }
+                    
+                    // Move toward target with smooth curve
+                    const dx = motion.targetX - motion.x;
+                    const dy = motion.targetY - motion.y;
+                    const distToTarget = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Direction to target
+                    const angleToTarget = Math.atan2(dy, dx);
+                    
+                    // SLOWER direction change
+                    motion.direction = lerpAngle(
+                        motion.direction, 
+                        angleToTarget, 
+                        0.01 + (distToTarget < 50 ? 0.005 : 0.015)
+                    );
+                    
+                    // Add some wave motion - REDUCED AMPLITUDE
+                    const waveOffset = Math.sin(motion.patternTime * motion.frequency + motion.patternPhase) * 
+                                    (motion.amplitude * 0.7);
+                    
+                    // Calculate perpendicular direction for wave
+                    const perpDirection = motion.direction + Math.PI/2;
+                    
+                    // Move toward target with wave motion
+                    newX += Math.cos(motion.direction) * motion.baseSpeed + 
+                          Math.cos(perpDirection) * waveOffset * 0.08;
+                    newY += Math.sin(motion.direction) * motion.baseSpeed +
+                          Math.sin(perpDirection) * waveOffset * 0.08;
+                    break;
+                    
+                case 2: // Gentle circular pattern
+                    // Update target periodically
+                    motion.targetTimer++;
+                    if (motion.targetTimer >= motion.targetDuration) {
+                        // Get new target - but not too far from current position
+                        const currentX = motion.x;
+                        const currentY = motion.y;
+                        let target;
+                        
+                        do {
+                            target = getRandomContainerPoint();
+                            const dx = target.x - currentX;
+                            const dy = target.y - currentY;
+                            const distance = Math.sqrt(dx*dx + dy*dy);
+                            
+                            // If close enough, accept the target
+                            if (distance < containerWidth * 0.3) break;
+                        } while (true);
+                        
+                        motion.targetX = target.x;
+                        motion.targetY = target.y;
+                        motion.targetTimer = 0;
+                    }
+                    
+                    // Calculate direction to target
+                    const targetDx = motion.targetX - motion.x;
+                    const targetDy = motion.targetY - motion.y;
+                    const targetDist = Math.sqrt(targetDx * targetDx + targetDy * targetDy);
+                    
+                    // Calculate angle to target
+                    const targetAngle = Math.atan2(targetDy, targetDx);
+                    
+                    // SLOWER direction change
+                    motion.direction = lerpAngle(
+                        motion.direction, 
+                        targetAngle, 
+                        0.02
+                    );
+                    
+                    // CONSISTENT SPEED - only minor variations
+                    motion.currentSpeed = motion.baseSpeed * 
+                                        (1 + 0.1 * Math.sin(motion.patternTime * 0.1));
+                    
+                    // Move in calculated direction
+                    newX += Math.cos(motion.direction) * motion.currentSpeed;
+                    newY += Math.sin(motion.direction) * motion.currentSpeed;
+                    break;
+            }
+            
+            // Keep planes within bounds, accounting for dimensions
+            if (newX < 10) newX = 10 + Math.random() * 5;
+            if (newX > containerWidth - motion.width - 10) newX = containerWidth - motion.width - 10 - Math.random() * 5;
+            if (newY < 10) newY = 10 + Math.random() * 5;
+            if (newY > containerHeight - motion.height - 10) newY = containerHeight - motion.height - 10 - Math.random() * 5;
+            
+            // Bounce off edges by changing direction smoothly
+            const bounceMargin = 30; // Increased margin for earlier bounce detection
+            if (newX <= bounceMargin || newX >= containerWidth - motion.width - bounceMargin) {
+                // Horizontal bounce - flip x component of direction
+                motion.targetDirection = Math.PI - motion.targetDirection;
+                // Add small randomness to prevent getting stuck
+                motion.targetDirection += (Math.random() - 0.5) * 0.3;
+            }
+            
+            if (newY <= bounceMargin || newY >= containerHeight - motion.height - bounceMargin) {
+                // Vertical bounce - flip y component of direction
+                motion.targetDirection = -motion.targetDirection;
+                // Add small randomness to prevent getting stuck
+                motion.targetDirection += (Math.random() - 0.5) * 0.3;
+            }
+            
+            // IMPORTANT: Limit maximum movement per frame - prevents teleporting
+            const maxMovementPerFrame = motion.baseSpeed * 1.5;
+            const deltaX = newX - motion.x;
+            const deltaY = newY - motion.y;
+            const movementDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            if (movementDistance > maxMovementPerFrame) {
+                // Scale down the movement to the maximum allowed
+                const scaleFactor = maxMovementPerFrame / movementDistance;
+                newX = motion.x + deltaX * scaleFactor;
+                newY = motion.y + deltaY * scaleFactor;
+            }
+            
+            // Update position with position history for movement smoothing
+            motion.x = newX;
+            motion.y = newY;
+            
+            // Add current position to history and remove oldest if needed
+            motion.previousPositions.push({x: newX, y: newY});
+            if (motion.previousPositions.length > motion.positionHistorySize) {
+                motion.previousPositions.shift();
+            }
+            
+            // Calculate average position for smoother movement
+            let avgX = 0;
+            let avgY = 0;
+            motion.previousPositions.forEach(pos => {
+                avgX += pos.x;
+                avgY += pos.y;
+            });
+            avgX /= motion.previousPositions.length;
+            avgY /= motion.previousPositions.length;
+            
+            // Calculate direction from movement for rotation
+            let visualRotation;
+            const movementX = motion.x - motion.lastX;
+            const movementY = motion.y - motion.lastY;
+            
+            if (Math.abs(movementX) > 0.1 || Math.abs(movementY) > 0.1) {
+                // Calculate angle based on movement direction
+                visualRotation = Math.atan2(movementY, movementX) * (180/Math.PI) + 90;
+            } else {
+                // Keep current rotation if barely moving
+                visualRotation = parseFloat(plane.style.transform.replace('rotate(', '').replace('deg)', ''));
+            }
+            
+            // Apply position and rotation
+            plane.style.left = `${avgX}px`;
+            plane.style.top = `${avgY}px`;
+            plane.style.transform = `rotate(${visualRotation}deg)`;
+        }
+        
+        // Start guessing phase
+        function startGuessing() {
+            gameState = 'guessing';
+            statusDisplay.textContent = `Find the ${currentLevel} plane${currentLevel > 1 ? 's' : ''}!`;
+            
+            // Cancel animation if still running
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+        }
+        
+        // Handle plane clicks
+        function handlePlaneClick(event) {
+            if (gameState !== 'guessing') return;
+            
+            const clickedPlane = event.target;
+            
+            if (trackedPlanes.includes(clickedPlane)) {
+                // Found a correct plane
+                clickedPlane.classList.add('tracked-plane');
+                clickedPlane.classList.add('victory-animation');
+                
+                // Remove from tracked planes list so it can't be clicked again
+                const index = trackedPlanes.indexOf(clickedPlane);
+                trackedPlanes.splice(index, 1);
+                
+                planesFound++;
+                
+                // Check if all planes found
+                if (planesFound === currentLevel) {
+                    // Level complete
+                    setTimeout(() => {
+                        if (currentLevel === totalLevels) {
+                            // Game complete
+                            gameCompleteOverlay.classList.remove('hidden');
+                        } else {
+                            // Next level
+                            levelCompleteOverlay.classList.remove('hidden');
+                        }
+                    }, 1000);
+                    
+                    gameState = 'complete';
+                    statusDisplay.textContent = 'Level Complete!';
+                } else {
+                    // Still more planes to find
+                    statusDisplay.textContent = `Good! Find ${currentLevel - planesFound} more plane${currentLevel - planesFound > 1 ? 's' : ''}!`;
+                }
+            } else {
+                // Wrong plane clicked - game over
+                gameState = 'complete';
+                trackedPlanes.forEach(plane => {
+                    plane.classList.add('tracked-plane');
+                });
+                
+                document.getElementById('game-over-message').textContent = 
+                    `You found ${planesFound} out of ${currentLevel} planes.`;
+                gameOverOverlay.classList.remove('hidden');
+            }
+        }
+        
+        // Go to next level
+        function nextLevel() {
+            currentLevel++;
+            levelCompleteOverlay.classList.add('hidden');
+            initGame();
+        }
+        
+        // Restart the game
+        function restartGame() {
+            currentLevel = 1;
+            gameCompleteOverlay.classList.add('hidden');
+            gameOverOverlay.classList.add('hidden');
+            initGame();
+        }
+        
+        // Event listeners
+        startButton.addEventListener('click', startLevel);
+        restartButton.addEventListener('click', restartGame);
+        startGameButton.addEventListener('click', () => {
+            startOverlay.classList.add('hidden');
+            initGame();
+        });
+        nextLevelButton.addEventListener('click', nextLevel);
+        restartGameButton.addEventListener('click', restartGame);
+        tryAgainButton.addEventListener('click', () => {
+            gameOverOverlay.classList.add('hidden');
+            initGame();
+        });
+        
+        // Initial setup
+        window.addEventListener('load', () => {
+            containerWidth = gameContainer.offsetWidth;
+            containerHeight = gameContainer.offsetHeight;
+            initGame();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            containerWidth = gameContainer.offsetWidth;
+            containerHeight = gameContainer.offsetHeight;
+        });
+    </script>
+</body>
+</html>

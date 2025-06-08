@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -12,6 +12,8 @@ import DiamondIcon from '@mui/icons-material/Diamond';
 import CircleIcon from '@mui/icons-material/Circle';
 import SquareIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const stats = [
   { value: 17, label: 'Games Played' },
@@ -47,13 +49,24 @@ const badges = [
 ];
 
 const GiftsPage = () => {
+  const [username, setUsername] = useState("")
+  useEffect(()=>{
+    const unsubscribe = onAuthStateChanged(auth, (user)=>{
+      if(user){
+        setUsername(user.displayName || "No name available")
+      }else{
+        setUsername("")
+      }
+    })
+    return() => unsubscribe
+  }, [])
   return (
     <div >
        <div >
- <Box sx={{ bgcolor: '#eee', minHeight: '100vh', p: 2 }}>
+ <Box sx={{ bgcolor: '#eee', minHeight: '100vh', p: 2, mt:-6 }}>
       {/* Header */}
       <Typography variant="h6" fontWeight="bold">
-        You are Killing, Jane Doe
+        You are Killing, {username}
       </Typography>
       <Grid container spacing={2} my={2}>
         {stats.map((stat, index) => (

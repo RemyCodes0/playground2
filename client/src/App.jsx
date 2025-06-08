@@ -18,7 +18,7 @@ const AppWrapper = () => {
   const location = useLocation();
 
 
-  const hideHeaderRoutes = ['/AppHunt', '/spottheplane'];
+  const hideHeaderRoutes = ['/AppHunt', '/spottheplane', "/Ace_it"];
 
   const shouldHideHeader = hideHeaderRoutes.includes(location.pathname);
 

@@ -49,7 +49,7 @@ const Signup = () => {
     const handleGoogleSignup =async ()=>{
         setError("")
         setSuccess("")
-        setLoader("")
+        setLoader(true)
 
         const provider = new GoogleAuthProvider()
         try{
