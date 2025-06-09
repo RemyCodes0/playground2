@@ -69,6 +69,7 @@ const GamePage = () => {
     <Box sx={{ p: 3, bgcolor: "#eee", minHeight: "100vh", mt: -6 }}>
       <Typography variant="h6" fontWeight="bold" gutterBottom>
         Newest Game
+  
       </Typography>
       <Card
         sx={{
@@ -99,13 +100,13 @@ const GamePage = () => {
       (<ul>
         {gameList.map((game, index) => (
           <li>
-            <Link to={game.url}>
+            <a href={game.url} style={{ textDecoration: 'none' }}>
               <GameCard
                 key={index}
                 title={game.title}
                 description={game.description}
               />
-            </Link>
+            </a>
           </li>
         ))}
       </ul>)}

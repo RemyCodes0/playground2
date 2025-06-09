@@ -40,7 +40,6 @@ const AppWrapper = () => {
         <Route path='/analysis' element={<AceItAnalytics />} />
         <Route path='/BetOn' element={<HomePage/>}/>
         <Route path='/StartBetOn' element={<Game/>}/>
-        
       </Routes>
     </>
   );
